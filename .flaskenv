@@ -1,0 +1,2 @@
+FLASK_APP=cleanlog
+FLASK_ENV=development
