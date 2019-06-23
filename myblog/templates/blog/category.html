@@ -1,0 +1,53 @@
+{% extends 'base.html' %}
+{% from 'bootstrap/pagination.html' import render_pagination %}
+
+{% block title %}{{ category.name }}{% endblock %}
+
+{% block url %}{{ category.name | lower }}{% endblock url %}
+
+{% block header %}
+    {% if category.name == "Math" %} 
+        <h1>Pure Math</h1>
+        <span class="subheading">This is what I used to do</span>
+        
+    {% elif category.name == "Computer" %}
+        <h1>Computer</h1>
+        <span class="subheading">This is what I do now</span>
+
+    {% elif category.name == "Physics" %}
+        <h1>The whole Universe</h1>
+        <span class="subheading">This is what I wonder</span>
+
+    {% else %}
+        <h1>Daily Life</h1>
+        <span class="subheading">This is what I used to ignore</span>
+
+    {% endif %}
+{% endblock header %}
+
+{% block content %}
+    <div class="row">
+        <div class="col-lg-8 col-md-10 mx-auto">
+            <div class="post-preview">
+                {% include "blog/_posts.html" %}
+            </div>
+            <div class="page-footer float-right">{{ render_pagination(pagination) }}</div>
+        </div>
+        <div class="col-lg-3 sidebar">
+            {% if topics %}
+                <div class="card sticky-top">
+                    <div class="card-header">Topics</div>
+                    <ul class="list-group list-group-flush">
+                        {% for topic in topics %}
+                            <li class="list-group-item  list-group-item-action d-flex justify-content-between align-items-center">
+                                <a href="{{ url_for('.show_topic', topic_id=topic.id) }}">
+                                    {{ topic.name }}
+                                </a>
+                            </li>
+                        {% endfor %}
+                    </ul>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+{% endblock %}

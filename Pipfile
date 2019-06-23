@@ -21,6 +21,8 @@ flask-login = "*"
 flask-debugtoolbar = "*"
 flask-migrate = "*"
 coverage = "*"
+flask-blogging = "*"
+unidecode = "*"
 
 [requires]
 python_version = "3.6"

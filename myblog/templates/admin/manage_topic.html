@@ -1,0 +1,54 @@
+{% extends 'base.html' %}
+{% from 'bootstrap/form.html' import render_form %}
+
+{% block title %}Manage Topics{% endblock %}
+
+{% block content %}
+    <div class="page-header">
+        <h1>Topics
+            <small class="text-muted">{{ topics|length }}</small>
+            <span class="float-right"><a class="btn btn-primary btn-sm"
+                                         href="{{ url_for('.new_topic') }}">New Topic</a></span>
+        </h1>
+    </div>
+    {% if topics %}
+        <table class="table table-striped">
+            <thead>
+            <tr>
+                <th>No.</th>
+                <th>Name</th>
+                <th>Posts</th>
+                <th>Category</th>
+                <th>Actions</th>
+            </tr>
+            </thead>
+            {% for topic in topics %}
+                <tr>
+                    <td>{{ loop.index }}</td>
+                    <td>{{ topic.name }}
+                    </td>
+                    <td>{{ topic.posts|length }}</td>
+                    <td>{{ topic.category.name }}</td>
+                    <td class="btn-group">
+                        {% if topic.id != 1 %}
+                            <a class="btn btn-info btn-sm"
+                               href="{{ url_for('.edit_topic', topic_id=topic.id) }}">Edit</a>
+
+                            <form class="inline" method="post"
+                                  action="{{ url_for('.delete_topic', topic_id=topic.id) }}">
+                                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
+                                <button type="submit" class="btn btn-danger btn-sm"
+                                        onclick="return confirm('Are you sure?');">Delete
+                                </button>
+                            </form>
+                        {% endif %}
+                    </td>
+                </tr>
+            {% endfor %}
+        </table>
+        <p class="text-muted">Tips: Deleting a topic does not delete the article under that topic.
+            The articles under this topic will be moved to the default topic.</p>
+    {% else %}
+        <div class="tip"><h5>No topic.</h5></div>
+    {% endif %}
+{% endblock %}

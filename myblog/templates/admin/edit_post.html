@@ -1,0 +1,44 @@
+{% extends 'base.html' %}
+{% from 'bootstrap/form.html' import render_field %}
+
+{% block title %}Edit Post{% endblock %}
+
+{% block link %}
+{{ super() }}
+<link rel="stylesheet" href="{{ url_for('static',filename='editormd/css/editormd.css') }}"/>
+{% endblock %}
+
+{% block content %}
+    <div class="page-header">
+        <h1>Edit Post</h1>
+    </div>
+    <form method="POST">
+        {{ render_field(form.csrf_token) }}
+        {{ render_field(form.title) }}
+        {{ render_field(form.category) }}
+        {{ render_field(form.topic) }}
+        <div id="test-editormd" class="editormd">
+            {{ form.body(style="display:none;") }}
+        </div>  
+        {{ render_field(form.submit) }}
+    </form>  
+{% endblock %}
+
+{% block scripts %}
+    <script src="{{ url_for('static',filename='editormd/examples/js/jquery.min.js') }}"></script>
+    <script src="{{ url_for('static',filename='editormd/editormd.min.js') }}"></script>
+    <script type="text/javascript">
+        $(function () {
+            editormd("test-editormd", {
+                // width: "100%", 请不要添加
+                height: 640,
+                syncScrolling: "single",
+                path: "{{ url_for('static',filename='editormd/lib/') }}",
+                tex: true,
+                saveHTMLToTextarea : true
+            });
+        });
+    </script>
+    {{ super() }}
+
+{% endblock %}

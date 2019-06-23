@@ -1,0 +1,48 @@
+{% extends 'base.html' %}
+
+{% from 'bootstrap/nav.html' import render_nav_item %}
+{% from 'bootstrap/form.html' import render_form %}
+{% from 'bootstrap/pagination.html' import render_pagination %}
+
+{% block title %}Home{% endblock title %}
+
+{% block url %}universe{% endblock %}
+
+{% block header %}
+<h1>Ask Questions</h1>
+<span class="subheading">This is what I think</span>
+{% endblock header %}        
+  
+
+{% block content %}
+    <div class="row">
+        <div class="col-lg-8 col-md-10 mx-auto">
+            <div class="card mb-5">           
+                    <div class="card-body bg-info">
+                        <div class="card-text text-white">科学的唯一对象是人类精神的光荣,基于这点一个数论问题,就和一个关于行星系的问题一样有价值</div>
+                    </div>
+                    <div class="card-footer text-right">
+                        <small>今天</small>
+                    </div>
+            </div>
+            {% for thought in thoughts %}
+                <div class="card mb-5">           
+                    <div class="card-body bg-info">
+                        <div class="card-text text-white">{{ thought.body }}</div>
+                    </div>
+                    <div class="card-footer text-right">
+                        <small data-toggle="tooltip" data-placement="top"
+                                data-timestamp="{{ thought.timestamp.strftime('%Y-%m-%dT%H:%M:%SZ') }}"
+                                data-delay="500">
+                            {{ moment(thought.timestamp).fromNow(refresh=True) }}
+                        </small>
+                    </div>
+                </div>
+            {% endfor %}          
+            <!-- Back to top
+            <a class="docs-top" style="display: none" href="#">Back to top</a>
+             -->
+            <div class="page-footer float-right">{{ render_pagination(pagination) }}</div>  
+        </div>  
+    </div>
+{% endblock %}
