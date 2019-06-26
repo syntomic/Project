@@ -6,6 +6,44 @@
 {% block link %}
     {{ super() }}
     <link href="{{ url_for('static', filename='editormd/css/editormd.preview.min.css') }}" rel="stylesheet" />  
+    <style>
+        .markdown-toc-list {
+            padding-left: 0;
+            margin-top: 30px;
+            font-size: 13px;
+            list-style: none; }
+        .markdown-toc-list a {
+            display: block;
+            padding: 2px 10px 2px 10px; }
+        .markdown-toc-list > li {
+            margin-bottom: 5px; }
+        .markdown-toc-list > li:first-child {
+            display: block; }
+        .markdown-toc-list ul {
+            list-style: none;
+            padding-left: 20px; }
+        .markdown-toc-list ul ul {
+        display: block; }
+        @media (min-width: 576px) {
+            .markdown-toc-list {
+                float: right;
+                width: 220px;
+                margin-right: -250px; }
+            .markdown-toc-list a {
+                color: #536570;
+                padding-left: 20px; }
+            .markdown-toc-list ul {
+                display: block; }
+            .markdown-toc-list .active + ul {
+                display: block; }
+            .markdown-toc-list .active {
+                padding-left: 18px;
+                color: #3097D1;
+                background-color: transparent;
+                border-left: 2px solid #3097D1; }
+            .markdown-toc-list.affix {
+                top: 0; } }
+    </style>
 {% endblock %}
 
 {% block url %}post-bg{% endblock %}
@@ -28,98 +66,102 @@
         {% endif %}
     </div>
     <div class="row">
-        <div class="col-lg-10 mx-auto">
-            <div class="content" id="test-editormd-view">
-                {{ post.body_html|safe }}
+        <div class="col-lg-9 mx-auto content">
+            <div id="custom-toc-container" class="sticky-top"></div>
+            <div id="test-editormd-view">
+                <textarea id="append-test" style="display:none;">
+                    {{ post.body|safe }}
+                </textarea>
             </div>
-            <hr>
-            <div class="comments" id="comments">
-                <h3 class="mb-4">{{ comments|length }} Comments
-                    <small>
-                        <a href="{{ url_for('.show_post', post_id=post.id, page=pagination.pages or 1) }}#comments">
-                            latest</a>
-                    </small>
-                    {% if current_user.is_authenticated %}
-                        <form class="float-right" method="post"
-                              action="{{ url_for('admin.set_comment', post_id=post.id, next=request.full_path) }}">
-                            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
-                            <button type="submit" class="btn btn-warning btn-sm">
-                                {% if post.can_comment %}Disable{% else %}Enable{% endif %} Comment
-                            </button>
-                        </form>
-                    {% endif %}
-                </h3>
-                {% if comments %}
-                    <ul class="list-group">
-                        {% for comment in comments %}
-                            <li class="list-group-item list-group-item-action flex-column">
-                                <div class="d-flex w-100 justify-content-between">
-                                    <h5 class="mb-1">
-                                        <a href="{% if comment.site %}{{ comment.site }}{% else %}#{% endif %}"
-                                           target="_blank">
-                                            {% if comment.from_admin %}
-                                                {{ admin.name }}
-                                            {% else %}
-                                                {{ comment.author }}
-                                            {% endif %}
-                                        </a>
-                                        {% if comment.from_admin %}
-                                            <span class="badge badge-primary">Author</span>{% endif %}
-                                        {% if comment.replied %}<span class="badge badge-light">Reply</span>{% endif %}
-                                    </h5>
-                                    <small data-toggle="tooltip" data-placement="top" data-delay="500"
-                                           data-timestamp="{{ comment.timestamp.strftime('%Y-%m-%dT%H:%M:%SZ') }}">
-                                        {{ moment(comment.timestamp).fromNow() }}
-                                    </small>
-                                </div>
-                                {% if comment.replied %}
-                                    <p class="alert alert-dark reply-body">{{ comment.replied.author }}:
-                                        <br>{{ comment.replied.body }}
-                                    </p>
-                                {%- endif -%}
-                                <p class="mb-1">{{ comment.body }}</p>
-                                <div class="btn-group float-right">
-                                    <a class="btn btn-light btn-sm"
-                                       href="{{ url_for('.reply_comment', comment_id=comment.id) }}">Reply</a>
-                                    {% if current_user.is_authenticated %}
-                                        <a class="btn btn-light btn-sm" href="mailto:{{ comment.email }}">Email</a>
-                                        <form class="inline" method="post"
-                                              action="{{ url_for('admin.delete_comment', comment_id=comment.id, next=request.full_path) }}">
-                                            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
-                                            <button type="submit" class="btn btn-danger btn-sm"
-                                                    onclick="return confirm('Are you sure?');">Delete
-                                            </button>
-                                        </form>
-                                    {% endif %}
-                                </div>
-                            </li>
-                        {% endfor %}
-                    </ul>
-                {% else %}
-                    <div class="tip"><h5>No comments.</h5></div>
+        <hr>
+        <div class="comments" id="comments">
+            <h3 class="mb-4">{{ comments|length }} Comments
+                <small>
+                    <a href="{{ url_for('.show_post', post_id=post.id, page=pagination.pages or 1) }}#comments">
+                        latest</a>
+                </small>
+                {% if current_user.is_authenticated %}
+                    <form class="float-right" method="post"
+                            action="{{ url_for('admin.set_comment', post_id=post.id, next=request.full_path) }}">
+                        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
+                        <button type="submit" class="btn btn-warning btn-sm">
+                            {% if post.can_comment %}Disable{% else %}Enable{% endif %} Comment
+                        </button>
+                    </form>
                 {% endif %}
-            </div>
+            </h3>
             {% if comments %}
-                {{ render_pagination(pagination, fragment='#comments', align="right") }}
-            {% endif %}
-            {% if request.args.get('reply') %}
-                <div class="alert alert-dark">
-                    Reply to <strong>{{ request.args.get('author') }}</strong>:
-                    <a class="float-right" href="{{ url_for('.show_post', post_id=post.id) }}">Cancel</a>
-                </div>
-            {% endif %}
-            {% if post.can_comment %}
-                <div id="comment-form">
-                    {{ render_form(form, action=request.full_path) }}
-                </div>
+                <ul class="list-group">
+                    {% for comment in comments %}
+                        <li class="list-group-item list-group-item-action flex-column">
+                            <div class="d-flex w-100 justify-content-between">
+                                <h5 class="mb-1">
+                                    <a href="{% if comment.site %}{{ comment.site }}{% else %}#{% endif %}"
+                                        target="_blank">
+                                        {% if comment.from_admin %}
+                                            {{ admin.name }}
+                                        {% else %}
+                                            {{ comment.author }}
+                                        {% endif %}
+                                    </a>
+                                    {% if comment.from_admin %}
+                                        <span class="badge badge-primary">Author</span>{% endif %}
+                                    {% if comment.replied %}<span class="badge badge-light">Reply</span>{% endif %}
+                                </h5>
+                                <small data-toggle="tooltip" data-placement="top" data-delay="500"
+                                        data-timestamp="{{ comment.timestamp.strftime('%Y-%m-%dT%H:%M:%SZ') }}">
+                                    {{ moment(comment.timestamp).fromNow() }}
+                                </small>
+                            </div>
+                            {% if comment.replied %}
+                                <p class="alert alert-dark reply-body">{{ comment.replied.author }}:
+                                    <br>{{ comment.replied.body }}
+                                </p>
+                            {%- endif -%}
+                            <p class="mb-1">{{ comment.body }}</p>
+                            <div class="btn-group float-right">
+                                <a class="btn btn-light btn-sm"
+                                    href="{{ url_for('.reply_comment', comment_id=comment.id) }}">Reply</a>
+                                {% if current_user.is_authenticated %}
+                                    <a class="btn btn-light btn-sm" href="mailto:{{ comment.email }}">Email</a>
+                                    <form class="inline" method="post"
+                                            action="{{ url_for('admin.delete_comment', comment_id=comment.id, next=request.full_path) }}">
+                                        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
+                                        <button type="submit" class="btn btn-danger btn-sm"
+                                                onclick="return confirm('Are you sure?');">Delete
+                                        </button>
+                                    </form>
+                                {% endif %}
+                            </div>
+                        </li>
+                    {% endfor %}
+                </ul>
             {% else %}
-                <div class="tip"><h5>Comment disabled.</h5></div>
+                <div class="tip"><h5>No comments.</h5></div>
             {% endif %}
+        </div>
+        {% if comments %}
+            {{ render_pagination(pagination, fragment='#comments', align="right") }}
+        {% endif %}
+        {% if request.args.get('reply') %}
+            <div class="alert alert-dark">
+                Reply to <strong>{{ request.args.get('author') }}</strong>:
+                <a class="float-right" href="{{ url_for('.show_post', post_id=post.id) }}">Cancel</a>
+            </div>
+        {% endif %}
+        {% if post.can_comment %}
+            <div id="comment-form">
+                {{ render_form(form, action=request.full_path) }}
+            </div>
+        {% else %}
+            <div class="tip"><h5>Comment disabled.</h5></div>
+        {% endif %}
         </div>
     </div>
 {% endblock %}
 
-{% block script %}
+{% block scripts %}
+    {{ super() }}
     <script type="text/javascript" src="{{ url_for('static', filename='editormd/lib/marked.min.js') }}"></script>
     <script type="text/javascript" src="{{ url_for('static', filename='editormd/lib/prettify.min.js') }}"></script>
     <script type="text/javascript" src="{{ url_for('static', filename='editormd/lib/raphael.min.js') }}"></script>
@@ -135,9 +177,9 @@
                 //markdown        : markdown ,//+ "\r\n" + $("#append-test").text(),
                 //htmlDecode      : true,       // 开启 HTML 标签解析，为了安全性，默认不开启
                 htmlDecode      : "style,script,iframe",  // you can filter tags decode
-                //toc             : false,
+                toc             : true,
                 tocm            : true,    // Using [TOCM]
-                //tocContainer    : "#custom-toc-container", // 自定义 ToC 容器层
+                tocContainer    : "#custom-toc-container", // 自定义 ToC 容器层
                 //gfm             : false,
                 //tocDropdown     : true,
                 // markdownSourceCode : true, // 是否保留 Markdown 源码，即是否删除保存源码的 Textarea 标签

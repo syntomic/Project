@@ -18,14 +18,17 @@
 {% block content %}
     <div class="row">
         <div class="col-lg-8 col-md-10 mx-auto">
-            <div class="content" id="test-editormd-view">
-                {{ admin.about_html|safe }}
+            <div id="test-editormd-view">
+                <textarea id="append-test" style="display:none;">
+                    {{ admin.about|safe }}
+                </textarea>
             </div>
         </div>
     </div>
 {% endblock %}
 
-{% block script %}
+{% block scripts %}
+    {{ super() }}
     <script type="text/javascript" src="{{ url_for('static', filename='editormd/lib/marked.min.js') }}"></script>
     <script type="text/javascript" src="{{ url_for('static', filename='editormd/lib/prettify.min.js') }}"></script>
     <script type="text/javascript" src="{{ url_for('static', filename='editormd/lib/raphael.min.js') }}"></script>

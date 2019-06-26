@@ -34,7 +34,7 @@ def fake_thoughts(count=20):
 
 def fake_categories():
     Math = Category(name="Math")
-    Computer = Category(name="Computer")
+    Computer = Category(name="CS")
     Physics = Category(name="Physics")
     Others = Category(name="Others")
 
@@ -43,9 +43,6 @@ def fake_categories():
     
 
 def fake_topics(count=10):
-    topic = Topic(name="Default")
-    db.session.add(topic)
-
     for i in range(count):
         topic = Topic(
             name=fake.word(),
@@ -135,11 +132,14 @@ def fake_comments(count=500):
     db.session.commit()
 
 
-def fake_links():
-    twitter = Link(name="Twitter", url='#')
-    facebook = Link(name='Facebook', url='#')
-    linkedin = Link(name='LinkedIn', url='#')
-    google = Link(name='Google+', url='#')
+def fake_links(count=10):
 
-    db.session.add_all([twitter, facebook, linkedin, google])
+    for i in range(count):
+        link = Link(
+            name = fake.word(), 
+            category = Category.query.get(random.randint(1, Category.query.count())),
+            url = '#'
+        )
+        db.session.add(link)
+
     db.session.commit()

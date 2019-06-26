@@ -21,15 +21,14 @@ class SettingForm(FlaskForm):
     name = StringField('Name', validators=[DataRequired(), Length(1, 70)])
     blog_title = StringField('Blog Title', validators=[DataRequired(), Length(1, 60)])
     about = TextAreaField('About Page', validators=[DataRequired()])
-    about_html = HiddenField()
     submit = SubmitField()
 
 class PostForm(FlaskForm):
     title = StringField('Title', validators=[DataRequired(), Length(1, 60)])
+    subtitle = StringField('Subtitle', validators=[DataRequired(), Length(1, 255)])
     category = SelectField('Category', coerce=int, default=1)
     topic = SelectField('Topic', coerce=int, default=1)
     body = TextAreaField('Body', validators=[DataRequired()])
-    body_html = HiddenField()
     submit = SubmitField()
 
     def __init__(self, *args, **kwargs):
@@ -78,5 +77,11 @@ class AdminCommentForm(CommentForm):
 
 class LinkForm(FlaskForm):
     name = StringField('Name', validators=[DataRequired(), Length(1, 30)])
+    category = SelectField('Category', coerce=int, default=1)
     url = StringField('URL', validators=[DataRequired(), URL(), Length(1, 255)])
     submit = SubmitField()
+
+    def __init__(self, *args, **kwargs):
+        super(LinkForm, self).__init__(*args, **kwargs)
+        self.category.choices = [(category.id, category.name)
+                                 for category in Category.query.order_by(Category.name).all()]

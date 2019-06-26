@@ -23,6 +23,7 @@ flask-migrate = "*"
 coverage = "*"
 flask-blogging = "*"
 unidecode = "*"
+flask-sslify = "*"
 
 [requires]
 python_version = "3.6"

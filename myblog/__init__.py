@@ -1,18 +1,24 @@
 # -*- coding: utf-8 -*-
 
+import logging
 import os
+from logging.handlers import RotatingFileHandler
+from flask.logging import default_handler
 
 import click
-from flask import Flask, render_template
+from flask import Flask, render_template, request
+from flask_sqlalchemy import get_debug_queries
 from flask_login import current_user
 from flask_wtf.csrf import CSRFError
 
 from myblog.blueprints.admin import admin_bp
 from myblog.blueprints.auth import auth_bp
 from myblog.blueprints.blog import blog_bp
-from myblog.extensions import bootstrap, db, login_manager, csrf, moment
+from myblog.extensions import sslify, bootstrap, db, login_manager, csrf, moment, toolbar, migarte
 from myblog.models import Admin, Category, Post, Comment, Link, Thought, Topic
 from myblog.settings import config
+
+basedir = os.path.abspath(os.path.dirname(os.path.dirname(__file__)))
 
 def create_app(config_name=None):
     if config_name is None:
@@ -28,12 +34,25 @@ def create_app(config_name=None):
     register_template_context(app)
     register_commands(app)
     register_errors(app)
+    register_request_handlers(app)
 
     return app
 
 
 def register_logging(app):
-    pass
+    
+    formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
+
+    file_handler = RotatingFileHandler(os.path.join(basedir, 'logs/bluelog.log'),
+                                       maxBytes=10 * 1024 * 1024, backupCount=10)
+    file_handler.setFormatter(formatter)
+    file_handler.setLevel(logging.INFO)
+
+    default_handler.setLevel(logging.INFO)
+
+    if not app.debug:
+        app.logger.addHandler(file_handler)
+        app.logger.addHandler(default_handler)
 
 
 def register_extensions(app):
@@ -42,6 +61,9 @@ def register_extensions(app):
     login_manager.init_app(app)
     csrf.init_app(app)
     moment.init_app(app)
+    toolbar.init_app(app)
+    migarte.init_app(app, db)
+    sslify.init_app(app)
 
 
 def register_blueprints(app):
@@ -53,7 +75,7 @@ def register_blueprints(app):
 def register_shell_context(app):
     @app.shell_context_processor
     def make_shell_context():
-        return dict(db=db, Admin=Admin, Thought=Thought, Post=Post, Category=Category, Topic=Topic, Comment=Comment)
+        return dict(db=db, Admin=Admin, Thought=Thought, Post=Post, Category=Category, Topic=Topic, Comment=Comment, Link=Link)
 
 
 def register_template_context(app):
@@ -124,10 +146,11 @@ def register_commands(app):
 
     @app.cli.command()
     @click.option('--thought', default=20, help='Quantity of thoughts, default is 20.')
+    @click.option('--link', default=10, help='Quantity of links, default is 10.')
     @click.option('--topic', default=10, help='Quantity of categories, default is 10.')
     @click.option('--post', default=50, help='Quantity of posts, default is 50.')
     @click.option('--comment', default=500, help='Quantity of comments, default is 500.')
-    def forge(thought, topic, post, comment):
+    def forge(thought, link, topic, post, comment):
         """Generate fake datas."""
         from myblog.fakes import fake_admin, fake_thoughts, fake_categories, fake_topics, fake_comments, fake_links, fake_posts
 
@@ -152,8 +175,8 @@ def register_commands(app):
         click.echo('Generating %d comments...' % comment)
         fake_comments(comment)
 
-        click.echo('Generating links...')
-        fake_links()
+        click.echo('Generating %d links...' % link)
+        fake_links(link)
 
         click.echo('Done.')
 
@@ -174,3 +197,15 @@ def register_errors(app):
     @app.errorhandler(CSRFError)
     def handle_csrf_error(e):
         return render_template('errors/400.html', description=e.description), 400
+
+
+def register_request_handlers(app):
+    @app.after_request
+    def query_profiler(response):
+        for q in get_debug_queries():
+            if q.duration >= app.config['BLUELOG_SLOW_QUERY_THRESHOLD']:
+                app.logger.warning(
+                    'Slow query: Duration: %fs\n Context: %s\nQuery: %s\n '
+                    % (q.duration, q.context, q.statement)
+                )
+        return response

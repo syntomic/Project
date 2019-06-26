@@ -39,8 +39,7 @@ def thought():
 @blog_bp.route('/archive')
 def archive():
     page = request.args.get('page', 1, type=int)
-    per_page = current_app.config['MYBLOG_ARCHIVE_PER_PAGE']
-    pagination = Post.query.order_by(Post.create_time.desc()).paginate(page, per_page=per_page)
+    pagination = Post.query.order_by(Post.create_time.desc()).paginate(page, per_page=100)
     posts = pagination.items
 
     return render_template('blog/archive.html', posts=posts, pagination=pagination)

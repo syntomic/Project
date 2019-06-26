@@ -25,8 +25,7 @@
             {% for topic in topics %}
                 <tr>
                     <td>{{ loop.index }}</td>
-                    <td>{{ topic.name }}
-                    </td>
+                    <td>{{ topic.name }}</td>
                     <td>{{ topic.posts|length }}</td>
                     <td>{{ topic.category.name }}</td>
                     <td class="btn-group">
@@ -47,7 +46,7 @@
             {% endfor %}
         </table>
         <p class="text-muted">Tips: Deleting a topic does not delete the article under that topic.
-            The articles under this topic will be moved to the default topic.</p>
+            The articles under this topic will be moved to the first topic.</p>
     {% else %}
         <div class="tip"><h5>No topic.</h5></div>
     {% endif %}

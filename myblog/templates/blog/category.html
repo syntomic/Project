@@ -10,8 +10,8 @@
         <h1>Pure Math</h1>
         <span class="subheading">This is what I used to do</span>
         
-    {% elif category.name == "Computer" %}
-        <h1>Computer</h1>
+    {% elif category.name == "CS" %}
+        <h1>Computer Sicence</h1>
         <span class="subheading">This is what I do now</span>
 
     {% elif category.name == "Physics" %}
@@ -19,7 +19,7 @@
         <span class="subheading">This is what I wonder</span>
 
     {% else %}
-        <h1>Daily Life</h1>
+        <h1>Enjoy Life</h1>
         <span class="subheading">This is what I used to ignore</span>
 
     {% endif %}
@@ -34,12 +34,13 @@
             <div class="page-footer float-right">{{ render_pagination(pagination) }}</div>
         </div>
         <div class="col-lg-3 sidebar">
-            {% if topics %}
-                <div class="card sticky-top">
+            <div class="sticky-top">
+                {% if topics %}
+                <div class="card mb-3">
                     <div class="card-header">Topics</div>
                     <ul class="list-group list-group-flush">
-                        {% for topic in topics %}
-                            <li class="list-group-item  list-group-item-action d-flex justify-content-between align-items-center">
+                        {% for topic in category.topics %}
+                            <li class="list-group-item">
                                 <a href="{{ url_for('.show_topic', topic_id=topic.id) }}">
                                     {{ topic.name }}
                                 </a>
@@ -47,7 +48,22 @@
                         {% endfor %}
                     </ul>
                 </div>
-            {% endif %}
+                {% endif %}
+                {% if links %}
+                <div class="card">
+                    <div class="card-header">Links</div>
+                    <ul class="list-group list-group-flush">
+                        {% for link in category.links %}
+                            <li class="list-group-item">
+                                <a href="{{ links.url }}">
+                                    {{ link.name }}
+                                </a>
+                            </li>
+                        {% endfor %}
+                    </ul>
+                </div>
+                {% endif %}
+            </div>
         </div>
     </div>
 {% endblock %}

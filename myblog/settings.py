@@ -14,12 +14,20 @@ class BaseConfig(object):
 
     SQLALCHEMY_TRACK_MODIFICATIONS = False
 
+    DEBUG_TB_INTERCEPT_REDIRECTS = False
+
+    SQLALCHEMY_TRACK_MODIFICATIONS = False
+    SQLALCHEMY_RECORD_QUERIES = True
+
+    SSL_DISABLED = True
+
     MYBLOG_THOUGHT_PER_PAGE = 15
     MYBLOG_ARCHIVE_PER_PAGE = 10
     MYBLOG_POST_PER_PAGE = 10
     MYBLOG_MANAGE_THOUGHT_PER_PAGE = 20
     MYBLOG_MANAGE_POST_PER_PAGE = 15
     MYBLOG_COMMENT_PER_PAGE = 15
+    MYBLOG_SLOW_QUERY_THRESHOLD = 1
 
 
 class DevelopmentConfig(BaseConfig):
@@ -33,6 +41,7 @@ class TestingConfig(BaseConfig):
 
 
 class ProductionConfig(BaseConfig):
+    SSL_DISABLED = False
     SQLALCHEMY_DATABASE_URI = os.getenv('DATABASE_URL', prefix + os.path.join(basedir, 'data.db'))
 
 

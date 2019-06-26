@@ -21,7 +21,6 @@ def settings():
         current_user.name = form.name.data
         current_user.blog_title = form.blog_title.data
         current_user.about = form.about.data
-        current_user.about_html = request.form['test-editormd-html-code']
 
         db.session.commit()
         
@@ -32,7 +31,6 @@ def settings():
     form.name.data = current_user.name
     form.blog_title.data = current_user.blog_title
     form.about.data = current_user.about
-    form.about_html.data = current_user.about_html
 
     return render_template('admin/settings.html', form=form)
 
@@ -107,11 +105,11 @@ def new_post():
 
     if form.validate_on_submit():
         title = form.title.data
+        subtitle = form.subtitle.data
         body = form.body.data
-        body_html = request.form['test-editormd-html-code']
         category = Category.query.get(form.category.data)
         topic = Topic.query.get(form.topic.data)
-        post = Post(title=title, body=body, body_html= body_html, category=category, topic=topic)
+        post = Post(title=title, subtitle=subtitle, body=body, category=category, topic=topic)
         # same with:
         # category_id = form.category.data
         # post = Post(title=title, body=body, category_id=category_id)
@@ -131,8 +129,8 @@ def edit_post(post_id):
     
     if form.validate_on_submit():
         post.title = form.title.data
+        post.subtitle = form.subtitle.data
         post.body = form.body.data
-        post.body_html = request.form['test-editormd-html-code']
         post.update_time = datetime.utcnow()
         post.category = Category.query.get(form.category.data)
         post.topic = Topic.query.get(form.topic.data)
@@ -141,8 +139,8 @@ def edit_post(post_id):
         return redirect(url_for('blog.show_post', post_id=post.id))
 
     form.title.data = post.title
+    form.subtitle.data = post.subtitle
     form.body.data = post.body
-    form.body_html.data = post.body_html
     form.category.data = post.category_id
     form.topic.data = post.topic_id
     return render_template('admin/edit_post.html', form=form)
@@ -242,11 +240,11 @@ def edit_topic(topic_id):
         return redirect(url_for('blog.index'))
 
     if form.validate_on_submit():
-        topic.name = form.name.datanew_topic
-        topic.category = form.category.data
+        topic.name = form.name.data
+        topic.category = Category.query.get(form.category.data)
         db.session.commit()
         flash('Topic updated.', 'success')
-        return redirect(url_for('.manage_category'))
+        return redirect(url_for('.manage_topic'))
 
     form.name.data = topic.name
     form.category.data = topic.category.name
@@ -258,7 +256,7 @@ def edit_topic(topic_id):
 def delete_topic(topic_id):
     topic = Topic.query.get_or_404(topic_id)
     if topic.id == 1:
-        flash('You can not delete the default category.', 'warning')
+        flash('You can not delete the default topic.', 'warning')
         return redirect(url_for('blog.index'))
 
     topic.delete()

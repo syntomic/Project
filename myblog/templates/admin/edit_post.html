@@ -13,8 +13,9 @@
         <h1>Edit Post</h1>
     </div>
     <form method="POST">
-        {{ render_field(form.csrf_token) }}
+        {{ form.csrf_token }}
         {{ render_field(form.title) }}
+        {{ render_field(form.subtitle) }}
         {{ render_field(form.category) }}
         {{ render_field(form.topic) }}
         <div id="test-editormd" class="editormd">

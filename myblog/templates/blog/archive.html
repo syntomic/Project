@@ -4,36 +4,20 @@
 {% block title %}Archive{% endblock %}
 
 {% block header %}
-<h1>Preview</h1>
-<span class="subheading">It's time to preview past</span>
+<h1>Back and Forward</h1>
+<span class="subheading">It's time to summary</span>
 {% endblock header %}
 
-{% block url %}math{% endblock %}
+{% block url %}archive{% endblock %}
 
 {% block content %}
     <div class="row">
         <div class="col-lg-8 col-md-10 mx-auto">       
             <div class="card mb-5">
                 <div class="card-header"> 2019 </div>
-                {% for post in posts[:2] %}
+                {% for post in posts %}
                 <ul class="list-group list-group-flush">
                     <li class="list-group-item"> {{ post.create_time.month }}-{{ post.create_time.day }} : <a href="{{ url_for('.show_post', post_id=post.id) }}">{{ post.title }}</a></li>
-                </ul>
-                {% endfor %}
-            </div>
-            <div class="card mb-5">
-                <div class="card-header"> 2018 </div>
-                {% for post in posts[2:5] %}
-                <ul class="list-group list-group-flush">
-                    <li class="list-group-item"> {{ post.create_time.month }}-{{ post.create_time.day }} : <a href="{{ url_for('.show_post', post_id=post.id) }}">{{ post.title }}</a></li>
-                </ul>
-                {% endfor %}
-            </div>
-            <div class="card mb-5">
-                <div class="card-header"> 2017 </div>
-                {% for post in posts[5:] %}
-                <ul class="list-group list-group-flush">
-                    <li class="list-group-item"> {{ post.create_time.month }}-{{ post.create_time.day }}: <a href="{{ url_for('.show_post', post_id=post.id) }}">{{ post.title }}</a></li>
                 </ul>
                 {% endfor %}
             </div>

@@ -19,7 +19,6 @@ class Admin(db.Model, UserMixin):
     blog_title = db.Column(db.String(60))
     name = db.Column(db.String(30))
     about = db.Column(db.Text)
-    about_html = db.Column(db.Text)
 
     def set_password(self, password):
         self.password_hash = generate_password_hash(password)
@@ -33,6 +32,7 @@ class Category(db.Model):
 
     topics = db.relationship('Topic', back_populates='category')
     posts = db.relationship('Post', back_populates='category')
+    links = db.relationship('Link', back_populates='category')
 
 class Topic(db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -43,11 +43,11 @@ class Topic(db.Model):
     posts = db.relationship('Post', back_populates='topic')
 
     def delete(self):
-        """posts of deleted topic will become default_topic"""
-        default_topic = Topic.query.get(1)
+        """posts of deleted topic will become first_topic"""
+        first_topic = Topic.query.get(1)
         posts = self.posts[:]
         for post in posts:
-            post.topic = default_topic
+            post.topic = first_topic
 
         db.session.delete(self)
         db.session.commit()
@@ -93,3 +93,6 @@ class Link(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(30))
     url = db.Column(db.String(255))
+
+    category_id = db.Column(db.Integer, db.ForeignKey('category.id'))
+    category = db.relationship('Category', back_populates="links")

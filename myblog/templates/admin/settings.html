@@ -13,7 +13,7 @@
         <h1>Settings</h1>
     </div>
     <form method="POST">
-        {{ render_field(form.csrf_token) }}
+        {{ form.csrf_token }}
         {{ render_field(form.name) }}
         {{ render_field(form.blog_title) }}
         <div id="test-editormd" class="editormd">
