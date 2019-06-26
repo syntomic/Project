@@ -24,6 +24,8 @@ coverage = "*"
 flask-blogging = "*"
 unidecode = "*"
 flask-sslify = "*"
+gunicorn = "*"
+psycopg2 = "*"
 
 [requires]
 python_version = "3.6"
