@@ -16,7 +16,7 @@ csrf = CSRFProtect()
 moment = Moment()
 toolbar = DebugToolbarExtension()
 migarte = Migrate()
-sslify = SSLify()
+#sslify = SSLify()
 
 
 @login_manager.user_loader

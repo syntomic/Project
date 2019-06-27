@@ -14,7 +14,7 @@ from flask_wtf.csrf import CSRFError
 from myblog.blueprints.admin import admin_bp
 from myblog.blueprints.auth import auth_bp
 from myblog.blueprints.blog import blog_bp
-from myblog.extensions import sslify, bootstrap, db, login_manager, csrf, moment, toolbar, migarte
+from myblog.extensions import bootstrap, db, login_manager, csrf, moment, toolbar, migarte
 from myblog.models import Admin, Category, Post, Comment, Link, Thought, Topic
 from myblog.settings import config
 
@@ -63,7 +63,7 @@ def register_extensions(app):
     moment.init_app(app)
     toolbar.init_app(app)
     migarte.init_app(app, db)
-    sslify.init_app(app)
+    #sslify.init_app(app)
 
 
 def register_blueprints(app):
@@ -203,7 +203,7 @@ def register_request_handlers(app):
     @app.after_request
     def query_profiler(response):
         for q in get_debug_queries():
-            if q.duration >= app.config['BLUELOG_SLOW_QUERY_THRESHOLD']:
+            if q.duration >= app.config['MYBLOG_SLOW_QUERY_THRESHOLD']:
                 app.logger.warning(
                     'Slow query: Duration: %fs\n Context: %s\nQuery: %s\n '
                     % (q.duration, q.context, q.statement)
