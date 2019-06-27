@@ -32,15 +32,6 @@ def fake_thoughts(count=20):
 
     db.session.commit()
 
-def fake_categories():
-    Math = Category(name="Math")
-    Computer = Category(name="CS")
-    Physics = Category(name="Physics")
-    Others = Category(name="Others")
-
-    db.session.add_all([Math, Computer, Physics, Others])
-    db.session.commit()
-    
 
 def fake_topics(count=10):
     for i in range(count):

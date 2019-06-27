@@ -135,11 +135,13 @@ def register_commands(app):
             admin.set_password(password)
             db.session.add(admin)
 
-        topic = Topic.query.first()
-        if topic is None:
-            click.echo('Creating the default category...')
-            topic = Topic(name='Default')
-            db.session.add(topic)
+        click.echo('Creating the categorys...')
+        Math = Category(name="Math")
+        Computer = Category(name="CS")
+        Physics = Category(name="Physics")
+        Others = Category(name="Others")
+
+        db.session.add_all([Math, Computer, Physics, Others])
 
         db.session.commit()
         click.echo('Done.')
@@ -162,9 +164,6 @@ def register_commands(app):
 
         click.echo('Generating %d thoughts...' % thought)
         fake_thoughts(thought)
-
-        click.echo('Generating 4 categories...')
-        fake_categories()
 
         click.echo('Generating %d topics...' % topic)
         fake_topics(topic)
