@@ -51,6 +51,7 @@ class CategoryForm(FlaskForm):
 class TopicForm(FlaskForm):
     name = StringField('Name', validators=[DataRequired(), Length(1, 30)])
     category = SelectField('Category', coerce=int, default=1)
+    description = StringField('Description', validators=[DataRequired(), Length(1, 255)])
     submit = SubmitField()
 
     def __init__(self, *args, **kwargs):

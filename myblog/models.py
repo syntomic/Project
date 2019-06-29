@@ -7,12 +7,9 @@ from werkzeug.security import generate_password_hash, check_password_hash
 
 from myblog.extensions import db
 
-class Thought(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
-    body = db.Column(db.String(200))
-    timestamp = db.Column(db.DateTime, default=datetime.utcnow, index=True)
 
 class Admin(db.Model, UserMixin):
+    """管理员模型, 存储网页标题, 关于界面, 管理员用户和密码"""
     id = db.Column(db.Integer, primary_key=True)
     username = db.Column(db.String(20))
     password_hash = db.Column(db.String(128))
@@ -26,7 +23,9 @@ class Admin(db.Model, UserMixin):
     def validate_password(self, password):
         return check_password_hash(self.password_hash, password)
 
+
 class Category(db.Model):
+    """类型模型, 存储类型名称, 以及其关系属性: 话题, 文章, 链接"""
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(30), unique=True)
 
@@ -34,16 +33,19 @@ class Category(db.Model):
     posts = db.relationship('Post', back_populates='category')
     links = db.relationship('Link', back_populates='category')
 
+
 class Topic(db.Model):
+    """话题模型, 存储相应类型下的话题, 描述, 以及其关系属性: 类型, 文章"""
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(20), unique=True)
+    description = db.Column(db.String(255), unique=True)
     category_id = db.Column(db.String(20), db.ForeignKey('category.id'))
     
     category = db.relationship('Category', back_populates='topics')
     posts = db.relationship('Post', back_populates='topic')
 
     def delete(self):
-        """posts of deleted topic will become first_topic"""
+        """删除话题以后,其下的文章将会成为第一个话题下的文章"""
         first_topic = Topic.query.get(1)
         posts = self.posts[:]
         for post in posts:
@@ -54,11 +56,11 @@ class Topic(db.Model):
 
 
 class Post(db.Model):
+    """文章模型, 存储文章的标题, 副标题, 内容, 创建时间和修改时间, 是否可评论, 及其关系属性: 类型, 话题, 评论"""
     id = db.Column(db.Integer, primary_key=True)
     title = db.Column(db.String(60))
     subtitle = db.Column(db.String(255))
     body = db.Column(db.Text)
-    body_html = db.Column(db.Text)
     create_time = db.Column(db.DateTime, default=datetime.utcnow, index = True)
     update_time = db.Column(db.DateTime, default=datetime.utcnow)
     can_comment = db.Column(db.Boolean, default=True)
@@ -73,6 +75,7 @@ class Post(db.Model):
 
 
 class Comment(db.Model):
+    """评论模型, 存储作者, 邮箱, 站点, 是否来自管理员, 是否审查过, 创建时间, 以及其关系属性: 文章, 回复(邻接列表关系)"""
     id = db.Column(db.Integer, primary_key=True)
     author = db.Column(db.String(30))
     email = db.Column(db.String(254))
@@ -89,7 +92,16 @@ class Comment(db.Model):
     replied = db.relationship('Comment', back_populates='replies', remote_side=[id])
     replies = db.relationship('Comment', back_populates='replied', cascade='all, delete-orphan')
 
+
+class Thought(db.Model):
+    """想法模型, 存储想法和时间"""
+    id = db.Column(db.Integer, primary_key=True)
+    body = db.Column(db.String(200))
+    timestamp = db.Column(db.DateTime, default=datetime.utcnow, index=True)
+
+
 class Link(db.Model):
+    """链接模型, 存储名称和url, 以及其关系属性: 类型"""
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(30))
     url = db.Column(db.String(255))

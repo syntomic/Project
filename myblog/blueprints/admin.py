@@ -1,4 +1,6 @@
 # -*- coding: utf-8 -*-
+
+import os
 from datetime import datetime
 
 from flask import render_template, flash, redirect, url_for, request, current_app, Blueprint
@@ -221,7 +223,8 @@ def new_topic():
     if form.validate_on_submit():
         name = form.name.data
         category = Category.query.get(form.category.data)
-        topic = Topic(name=name, category=category)
+        description = form.description.data
+        topic = Topic(name=name, category=category, description=description)
         db.session.add(topic)
         db.session.commit()
         flash('Topic created.', 'success')
@@ -242,12 +245,14 @@ def edit_topic(topic_id):
     if form.validate_on_submit():
         topic.name = form.name.data
         topic.category = Category.query.get(form.category.data)
+        topic.description = form.description.data
         db.session.commit()
         flash('Topic updated.', 'success')
         return redirect(url_for('.manage_topic'))
 
     form.name.data = topic.name
     form.category.data = topic.category.name
+    form.description.data = topic.description
     return render_template('admin/edit_topic.html', form=form)
 
 

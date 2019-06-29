@@ -1,5 +1,5 @@
 {% extends 'base.html' %}
-{% from 'bootstrap/pagination.html' import render_pager %}
+{% from 'bootstrap/pagination.html' import render_pagination %}
 
 {% block title %}Home{% endblock %}
 
@@ -17,32 +17,35 @@
             {% include 'blog/_posts.html' %}
         </div>
         {% if posts %}
-            <div class="page-footer float-right">{{ render_pager(pagination) }}</div>
+            <div class="page-footer float-right">{{ render_pagination(pagination) }}</div>
         {% endif %}   
     </div>
     <div class="col-lg-3">
-        {% if categories %}
-            <div class="card sticky-top">
-                <div class="card-header">Categories</div>
-                <ul class="list-group list-group-flush">
-                    {% for category in categories %}
-                        <li class="list-group-item">
-                            <a href="{{ url_for('blog.show_category', category_id=category.id) }}">
-                                {% if category.name == 'CS' %}
-                                    Computer Science
-                                {% elif category.name == 'Math' %}
-                                    Mathematics
-                                {% else %}
-                                    {{ category.name }}
-                                {% endif %}
-                            </a>
-                        </li>
-                    {% endfor %}
-                </ul>
-            </div>
-        {% endif %}
+    {% if categories %}
+        <div class="card sticky-top">
+            <div class="card-header">Categories</div>
+            <ul class="list-group list-group-flush">
+                {% for category in categories %}
+                    <li class="list-group-item">
+                        <a href="{{ url_for('blog.show_category', category_id=category.id) }}">
+                            {% if category.name == 'CS' %}
+                                Computer Science
+                            {% elif category.name == 'Math' %}
+                                Mathematics
+                            {% elif category.name == 'Others' %}
+                                Art and life
+                            {% else %}
+                                {{ category.name }}
+                            {% endif %}
+                        </a>
+                    </li>
+                {% endfor %}
+            </ul>
+        </div>
     </div>
-</div>    
+</div>
+{% endif %}
+
 {% endblock %}
 
 {% block scripts %}

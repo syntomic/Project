@@ -107,6 +107,16 @@ def register_commands(app):
             click.echo('Drop tables')
 
         db.create_all()
+
+        click.echo('Creating the categorys...')
+        Math = Category(name="Math")
+        Computer = Category(name="CS")
+        Physics = Category(name="Physics")
+        Others = Category(name="Life")
+
+        db.session.add_all([Math, Computer, Physics, Others])
+        db.session.commit()
+
         click.echo('Initialized databases.')
 
     @app.cli.command()
@@ -114,10 +124,9 @@ def register_commands(app):
     @click.option('--password', prompt=True, hide_input=True,
                   confirmation_prompt=True, help='The password used to login.')
     def init(username, password):
-        """Buliding Cleanblog, just for you."""
+        """Initialize the admin"""
 
         click.echo('Initializing the database...')
-        db.create_all()
 
         admin = Admin.query.first()
         if admin is not None:
@@ -125,7 +134,7 @@ def register_commands(app):
             admin.username = username
             admin.set_password(password)
         else:
-            click.echo('Creating the temporary adminstrator account...')
+            click.echo('Creating the adminstrator account...')
             admin = Admin(
                 username=username,
                 blog_title='Cleanlog',
@@ -134,14 +143,6 @@ def register_commands(app):
             )
             admin.set_password(password)
             db.session.add(admin)
-
-        click.echo('Creating the categorys...')
-        Math = Category(name="Math")
-        Computer = Category(name="CS")
-        Physics = Category(name="Physics")
-        Others = Category(name="Others")
-
-        db.session.add_all([Math, Computer, Physics, Others])
 
         db.session.commit()
         click.echo('Done.')
@@ -154,16 +155,10 @@ def register_commands(app):
     @click.option('--comment', default=500, help='Quantity of comments, default is 500.')
     def forge(thought, link, topic, post, comment):
         """Generate fake datas."""
-        from myblog.fakes import fake_admin, fake_thoughts, fake_categories, fake_topics, fake_comments, fake_links, fake_posts
-
-        db.drop_all()
-        db.create_all()
+        from myblog.fakes import fake_admin, fake_thoughts, fake_topics, fake_comments, fake_links, fake_posts
 
         click.echo('Generating the administrator...')
         fake_admin()
-
-        click.echo('Generating %d thoughts...' % thought)
-        fake_thoughts(thought)
 
         click.echo('Generating %d topics...' % topic)
         fake_topics(topic)
@@ -176,6 +171,9 @@ def register_commands(app):
 
         click.echo('Generating %d links...' % link)
         fake_links(link)
+
+        click.echo('Generating %d thoughts...' % thought)
+        fake_thoughts(thought)
 
         click.echo('Done.')
 
