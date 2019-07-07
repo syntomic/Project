@@ -4,15 +4,17 @@
 {% block title %}Archive{% endblock %}
 
 {% block header %}
-<h1>Back and Forward</h1>
-<span class="subheading">It's time to summary</span>
+<div class="page-heading">
+    <h1>Back and Forward</h1>
+    <span class="subheading">It's time to summary</span>
+</div> 
 {% endblock header %}
 
-{% block url %}archive{% endblock %}
+{% block url %}archive.jpg{% endblock %}
 
 {% block content %}
     <div class="row">
-        <div class="col-lg-8 col-md-10 mx-auto">       
+        <div class="col-lg-10 mx-auto">       
             <div class="card mb-5">
                 <div class="card-header"> 2019 </div>
                 {% for post in posts %}

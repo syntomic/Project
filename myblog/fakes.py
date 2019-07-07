@@ -5,7 +5,7 @@ from faker import Faker
 from sqlalchemy.exc import IntegrityError
 
 from myblog.extensions import db
-from myblog.models import Admin, Thought, Category, Topic, Post, Comment, Link
+from myblog.models import Admin, Thought, Category, Topic, Post, Comment
 
 
 fake = Faker()
@@ -23,11 +23,12 @@ def fake_admin():
     db.session.commit()
 
 
-def fake_topics(count=10):
+def fake_topics(count=8):
     for i in range(count):
+
         topic = Topic(
             name=fake.word(),
-            category=Category.query.get(random.randint(1, Category.query.count())),
+            category=Category.query.get(i % 4 + 1),
             description = fake.sentence()
             )
         db.session.add(topic)
@@ -42,15 +43,10 @@ def fake_posts(count=50):
     for i in range(count):
 
         category = Category.query.get(random.randint(1, Category.query.count()))
-        topics = list(Topic.query.with_parent(category))
-
-        if topics:
-            topic = topics[random.randint(0, len(topics)-1)]
-        else:
-            topic = None
+        topic = Topic.query.with_parent(category)[random.randint(0,1)]
 
         post = Post(
-            title=fake.sentence(),
+            title=fake.text(60),
             subtitle=fake.text(255),
             body=fake.text(2000),
             category= category,
@@ -70,7 +66,6 @@ def fake_comments(count=500):
         comment = Comment(
             author=fake.name(),
             email=fake.email(),
-            site=fake.url(),
             body=fake.sentence(),
             timestamp=fake.date_time_this_year(),
             reviewed=True,
@@ -84,7 +79,6 @@ def fake_comments(count=500):
         comment = Comment(
             author=fake.name(),
             email=fake.email(),
-            site=fake.url(),
             body=fake.sentence(),
             timestamp=fake.date_time_this_year(),
             reviewed=False,
@@ -96,7 +90,6 @@ def fake_comments(count=500):
         comment = Comment(
             author='Syntomic',
             email='mima@example.com',
-            site='example.com',
             body=fake.sentence(),
             timestamp=fake.date_time_this_year(),
             from_admin=True,
@@ -111,7 +104,6 @@ def fake_comments(count=500):
         comment = Comment(
             author=fake.name(),
             email=fake.email(),
-            site=fake.url(),
             body=fake.sentence(),
             timestamp=fake.date_time_this_year(),
             reviewed=True,
@@ -129,17 +121,5 @@ def fake_thoughts(count=20):
             timestamp=fake.date_time_this_year())
 
         db.session.add(thought)
-
-    db.session.commit()
-
-
-def fake_links(count=10):
-    for i in range(count):
-        link = Link(
-            name = fake.word(), 
-            category = Category.query.get(random.randint(1, Category.query.count())),
-            url = '#'
-        )
-        db.session.add(link)
 
     db.session.commit()

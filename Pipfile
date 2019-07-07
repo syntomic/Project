@@ -26,6 +26,8 @@ unidecode = "*"
 flask-sslify = "*"
 gunicorn = "*"
 psycopg2 = "*"
+pymysql = "*"
+flask-dropzone = "*"
 
 [requires]
 python_version = "3.6"

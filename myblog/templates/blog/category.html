@@ -3,67 +3,37 @@
 
 {% block title %}{{ category.name }}{% endblock %}
 
-{% block url %}{{ category.name | lower }}{% endblock url %}
+{% block url %}{{ category.name | lower }}.jpg{% endblock url %}
 
 {% block header %}
-    {% if category.name == "Math" %} 
+<div class="page-heading">
+    {% if category.name == "Math" %}
         <h1>Pure Math</h1>
-        <span class="subheading">where is my 'motif' ?</span>
+        <span class="subheading">What is your Motif</span>
         
     {% elif category.name == "CS" %}
-        <h1>Import this</h1>
+        <h1>YANGI so KISS</h1>
         <span class="subheading">Do not repeat yourself</span>
 
     {% elif category.name == "Physics" %}
         <h1>The whole Universe</h1>
-        <span class="subheading">Why does time flow forward ?</span>
+        <span class="subheading">Why does time flow forward</span>
 
     {% else %}
         <h1>Enjoy Life</h1>
         <span class="subheading">There is no right or wrong in life</span>
 
     {% endif %}
+</div>
 {% endblock header %}
 
 {% block content %}
     <div class="row">
-        <div class="col-lg-8 col-md-10 mx-auto">
+        <div class="col-lg-10 mx-auto">
             <div class="post-preview">
                 {% include "blog/_posts.html" %}
             </div>
             <div class="page-footer float-right">{{ render_pagination(pagination) }}</div>
-        </div>
-        <div class="col-lg-3 sidebar">
-            <div class="sticky-top">
-                {% if topics %}
-                <div class="card mb-3">
-                    <div class="card-header">Topics</div>
-                    <ul class="list-group list-group-flush">
-                        {% for topic in category.topics %}
-                            <li class="list-group-item">
-                                <a href="{{ url_for('.show_topic', topic_id=topic.id) }}">
-                                    {{ topic.name }}
-                                </a>
-                            </li>
-                        {% endfor %}
-                    </ul>
-                </div>
-                {% endif %}
-                {% if links %}
-                <div class="card">
-                    <div class="card-header">Links</div>
-                    <ul class="list-group list-group-flush">
-                        {% for link in category.links %}
-                            <li class="list-group-item">
-                                <a href="{{ links.url }}">
-                                    {{ link.name }}
-                                </a>
-                            </li>
-                        {% endfor %}
-                    </ul>
-                </div>
-                {% endif %}
-            </div>
         </div>
     </div>
 {% endblock %}

@@ -2,15 +2,18 @@
 {% from 'bootstrap/pagination.html' import render_pagination %}
 
 {% block title %}{{ topic.name }}{% endblock %}
+{% block url %}{{ topic.name }}/{{ topic.theme }} {% endblock %}
 
 {% block header %}
+<div class="page-heading">
     <h1>{{ topic.name }}</h1>
     <span class="subheading">{{ topic.description }}</span>
+</div>
 {% endblock %}
 
 {% block content %}
     <div class="row">
-        <div class="col-lg-8 col-md-10 mx-auto"> 
+        <div class="col-lg-10 mx-auto"> 
             <div class="post-preview">
                 {% include "blog/_posts.html" %}
             </div>

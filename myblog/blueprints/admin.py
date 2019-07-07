@@ -7,8 +7,8 @@ from flask import render_template, flash, redirect, url_for, request, current_ap
 from flask_login import login_required, current_user
 
 from myblog.extensions import db
-from myblog.forms import SettingForm, PostForm, CategoryForm, TopicForm, LinkForm, ThoughtForm
-from myblog.models import Post, Category, Topic, Comment, Link, Thought
+from myblog.forms import SettingForm, PostForm, CategoryForm, TopicForm, ThoughtForm
+from myblog.models import Post, Category, Topic, Comment, Thought
 from myblog.utils import redirect_back
 
 
@@ -108,15 +108,22 @@ def new_post():
     if form.validate_on_submit():
         title = form.title.data
         subtitle = form.subtitle.data
+        theme = request.files.getlist('image')[0].filename
         body = form.body.data
         category = Category.query.get(form.category.data)
         topic = Topic.query.get(form.topic.data)
-        post = Post(title=title, subtitle=subtitle, body=body, category=category, topic=topic)
+        post = Post(title=title, subtitle=subtitle, theme=theme, body=body, category=category, topic=topic)
         # same with:
         # category_id = form.category.data
         # post = Post(title=title, body=body, category_id=category_id)
         db.session.add(post)
         db.session.commit()
+
+        img_path = current_app.root_path  + '/static/img/' + str(topic.name)
+        for f in request.files.getlist('image'):
+            filename = f.filename
+            f.save(os.path.join(img_path, filename))
+
         flash('Post created.', 'success')
         return redirect(url_for('blog.show_post', post_id=post.id))
     
@@ -137,6 +144,12 @@ def edit_post(post_id):
         post.category = Category.query.get(form.category.data)
         post.topic = Topic.query.get(form.topic.data)
         db.session.commit()
+
+        img_path = current_app.root_path  + '/static/img/' + str(post.topic.name)
+        for f in request.files.getlist('image'):
+            filename = f.filename
+            f.save(os.path.join(img_path, filename))
+
         flash('Post updated.', 'success')
         return redirect(url_for('blog.show_post', post_id=post.id))
 
@@ -222,11 +235,18 @@ def new_topic():
     form = TopicForm()
     if form.validate_on_submit():
         name = form.name.data
+        image = form.image.data
+        theme = image.filename
         category = Category.query.get(form.category.data)
         description = form.description.data
-        topic = Topic(name=name, category=category, description=description)
+        topic = Topic(name=name, category=category, theme=theme, description=description)
         db.session.add(topic)
         db.session.commit()
+
+        img_path = current_app.root_path  + '/static/img/' + str(topic.name)
+        os.mkdir(img_path)  
+        image.save(os.path.join(img_path, theme))
+
         flash('Topic created.', 'success')
         return redirect(url_for('.manage_topic'))
     return render_template('admin/new_topic.html', form=form)
@@ -267,50 +287,3 @@ def delete_topic(topic_id):
     topic.delete()
     flash('Topic deleted.', 'success')
     return redirect(url_for('.manage_topic'))
-
-
-@admin_bp.route('/link/manage')
-@login_required
-def manage_link():
-    return render_template('admin/manage_link.html')
-
-
-@admin_bp.route('/link/new', methods=['GET', 'POST'])
-@login_required
-def new_link():
-    form = LinkForm()
-    if form.validate_on_submit():
-        name = form.name.data
-        url = form.url.data
-        link = Link(name=name, url=url)
-        db.session.add(link)
-        db.session.commit()
-        flash('Link created.', 'success')
-        return redirect(url_for('.manage_link'))
-    return render_template('admin/new_link.html', form=form)
-
-
-@admin_bp.route('/link/<int:link_id>/edit', methods=['GET', 'POST'])
-@login_required
-def edit_link(link_id):
-    form = LinkForm()
-    link = Link.query.get_or_404(link_id)
-    if form.validate_on_submit():
-        link.name = form.name.data
-        link.url = form.url.data
-        db.session.commit()
-        flash('Link updated.', 'success')
-        return redirect(url_for('.manage_link'))
-    form.name.data = link.name
-    form.url.data = link.url
-    return render_template('admin/edit_link.html', form=form)
-
-
-@admin_bp.route('/link/<int:link_id>/delete', methods=['POST'])
-@login_required
-def delete_link(link_id):
-    link = Link.query.get_or_404(link_id)
-    db.session.delete(link)
-    db.session.commit()
-    flash('Link deleted.', 'success')
-    return redirect(url_for('.manage_link'))

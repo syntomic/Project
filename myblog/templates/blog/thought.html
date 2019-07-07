@@ -6,16 +6,18 @@
 
 {% block title %}Home{% endblock title %}
 
-{% block url %}universe{% endblock %}
+{% block url %}thought.jpg{% endblock %}
 
 {% block header %}
-<h1>Ask Questions</h1>
-<span class="subheading">This is what I think</span>
+<div class="page-heading">
+    <h1>Ask Questions</h1>
+    <span class="subheading">This is what I think</span>
+</div>
 {% endblock header %}        
-  
+
 {% block content %}
     <div class="row">
-        <div class="col-lg-8 col-md-10 mx-auto">
+        <div class="col-lg-10 mx-auto">
             {% for thought in thoughts %}
                 <div class="card mb-5">           
                     <div class="card-body bg-light">

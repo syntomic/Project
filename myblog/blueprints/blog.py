@@ -5,8 +5,8 @@ from flask import render_template, flash, redirect, url_for, request, current_ap
 from flask_login import login_required, current_user
 
 from myblog.extensions import db
-from myblog.forms import ThoughtForm, SettingForm, PostForm, CategoryForm, TopicForm, LinkForm, AdminCommentForm, CommentForm
-from myblog.models import Post, Category, Topic, Comment, Link, Thought
+from myblog.forms import ThoughtForm, SettingForm, PostForm, CategoryForm, TopicForm, AdminCommentForm, CommentForm
+from myblog.models import Post, Category, Topic, Comment, Thought
 from myblog.utils import redirect_back
 
 

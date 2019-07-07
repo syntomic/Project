@@ -15,7 +15,7 @@ from myblog.blueprints.admin import admin_bp
 from myblog.blueprints.auth import auth_bp
 from myblog.blueprints.blog import blog_bp
 from myblog.extensions import bootstrap, db, login_manager, csrf, moment, toolbar, migarte
-from myblog.models import Admin, Category, Post, Comment, Link, Thought, Topic
+from myblog.models import Admin, Category, Post, Comment, Thought, Topic
 from myblog.settings import config
 
 basedir = os.path.abspath(os.path.dirname(os.path.dirname(__file__)))
@@ -61,7 +61,7 @@ def register_extensions(app):
     login_manager.init_app(app)
     csrf.init_app(app)
     moment.init_app(app)
-    toolbar.init_app(app)
+    #toolbar.init_app(app)
     migarte.init_app(app, db)
     #sslify.init_app(app)
 
@@ -75,7 +75,7 @@ def register_blueprints(app):
 def register_shell_context(app):
     @app.shell_context_processor
     def make_shell_context():
-        return dict(db=db, Admin=Admin, Thought=Thought, Post=Post, Category=Category, Topic=Topic, Comment=Comment, Link=Link)
+        return dict(db=db, Admin=Admin, Thought=Thought, Post=Post, Category=Category, Topic=Topic, Comment=Comment)
 
 
 def register_template_context(app):
@@ -84,7 +84,6 @@ def register_template_context(app):
         admin = Admin.query.first()
         categories = Category.query.order_by(Category.id).all()
         topics = Topic.query.order_by(Topic.name).all()
-        links = Link.query.order_by(Link.name).all()
 
         if current_user.is_authenticated:
             unread_comments = Comment.query.filter_by(reviewed=False).count()
@@ -93,7 +92,7 @@ def register_template_context(app):
 
         return dict(
             admin=admin, categories=categories, topics=topics,
-            links=links, unread_comments=unread_comments)
+            unread_comments=unread_comments)
 
 
 def register_commands(app):
@@ -112,9 +111,9 @@ def register_commands(app):
         Math = Category(name="Math")
         Computer = Category(name="CS")
         Physics = Category(name="Physics")
-        Others = Category(name="Life")
+        Life = Category(name="Life")
 
-        db.session.add_all([Math, Computer, Physics, Others])
+        db.session.add_all([Math, Computer, Physics, Life])
         db.session.commit()
 
         click.echo('Initialized databases.')
@@ -139,7 +138,7 @@ def register_commands(app):
                 username=username,
                 blog_title='Cleanlog',
                 name='Syntomic',
-                about='Anything about you.'
+                about='# Anything about you.'
             )
             admin.set_password(password)
             db.session.add(admin)
@@ -149,13 +148,12 @@ def register_commands(app):
 
     @app.cli.command()
     @click.option('--thought', default=20, help='Quantity of thoughts, default is 20.')
-    @click.option('--link', default=10, help='Quantity of links, default is 10.')
-    @click.option('--topic', default=10, help='Quantity of categories, default is 10.')
+    @click.option('--topic', default=8, help='Quantity of topics, default is 8.')
     @click.option('--post', default=50, help='Quantity of posts, default is 50.')
     @click.option('--comment', default=500, help='Quantity of comments, default is 500.')
-    def forge(thought, link, topic, post, comment):
+    def forge(thought, topic, post, comment):
         """Generate fake datas."""
-        from myblog.fakes import fake_admin, fake_thoughts, fake_topics, fake_comments, fake_links, fake_posts
+        from myblog.fakes import fake_admin, fake_thoughts, fake_topics, fake_comments, fake_posts
 
         click.echo('Generating the administrator...')
         fake_admin()
@@ -168,9 +166,6 @@ def register_commands(app):
 
         click.echo('Generating %d comments...' % comment)
         fake_comments(comment)
-
-        click.echo('Generating %d links...' % link)
-        fake_links(link)
 
         click.echo('Generating %d thoughts...' % thought)
         fake_thoughts(thought)

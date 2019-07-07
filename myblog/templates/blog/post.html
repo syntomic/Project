@@ -8,11 +8,13 @@
     <link href="{{ url_for('static', filename='editormd/css/editormd.preview.min.css') }}" rel="stylesheet" />
 {% endblock %}
 
-{% block url %}post-bg{% endblock %}
+{% block url %}{{ post.topic.name }}/{{ post.theme }}{% endblock %}
 
 {% block header %}
-<h2>{{ post.title }}</h2>
-<span class="subheading">{{ post.subtitle }}</span>
+<div class="post-heading">
+    <h1>{{ post.title }}</h1>
+    <h2 class="subheading">{{ post.subtitle }}</h2>
+</div>   
 {% endblock header %}
 
 {% block content %}
@@ -28,7 +30,7 @@
         {% endif %}
     </div>
     <div class="row">
-        <div class="col-lg-9 mx-auto content">
+        <div class="col-lg-10 mx-auto content">
             <div id="custom-toc-container" class="sticky-top"></div>
             <div id="test-editormd-view">
                 <textarea id="append-test" style="display:none;">
@@ -142,7 +144,7 @@
                 toc             : true,
                 tocm            : true,    // Using [TOCM]
                 tocContainer    : "#custom-toc-container", // 自定义 ToC 容器层
-                //gfm             : false,
+                gfm             : true,
                 //tocDropdown     : true,
                 // markdownSourceCode : true, // 是否保留 Markdown 源码，即是否删除保存源码的 Textarea 标签
                 emoji           : true,

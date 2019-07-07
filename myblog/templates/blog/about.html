@@ -2,7 +2,7 @@
 
 {% block title %}About{% endblock %}
 
-{% block url %}about-bg{% endblock %}
+{% block url %}about-bg.jpg{% endblock %}
 
 {% block link %}
     {{ super() }}
@@ -10,14 +10,16 @@
 {% endblock %}
 
 {% block header %}
+<div class="page-heading">
     <h1>About Me</h1>
     <span class="subheading">This is what I do.</span>
+</div>
 {% endblock %}
 
 
 {% block content %}
     <div class="row">
-        <div class="col-lg-8 col-md-10 mx-auto">
+        <div class="col-lg-10 mx-auto">
             <div id="test-editormd-view">
                 <textarea id="append-test" style="display:none;">
                     {{ admin.about|safe }}

@@ -1,8 +1,9 @@
 # -*- coding: utf-8 -*-
 
 from flask_wtf import FlaskForm
+from flask_wtf.file import FileField
 from wtforms import StringField, SubmitField, SelectField, TextAreaField, ValidationError, \
-    HiddenField, BooleanField, PasswordField
+    HiddenField, BooleanField, PasswordField, MultipleFileField
 from wtforms.validators import DataRequired, Email, Length, Optional, URL
 
 from myblog.models import Category, Topic
@@ -28,6 +29,7 @@ class PostForm(FlaskForm):
     subtitle = StringField('Subtitle', validators=[DataRequired(), Length(1, 255)])
     category = SelectField('Category', coerce=int, default=1)
     topic = SelectField('Topic', coerce=int, default=1)
+    image = MultipleFileField('Upload Image')
     body = TextAreaField('Body', validators=[DataRequired()])
     submit = SubmitField()
 
@@ -35,7 +37,7 @@ class PostForm(FlaskForm):
         super(PostForm, self).__init__(*args, **kwargs)
         self.category.choices = [(category.id, category.name)
                                  for category in Category.query.order_by(Category.id).all()]
-        
+
         self.topic.choices = [(topic.id, topic.name)
                                for topic in Topic.query.order_by(Topic.name).all()] # 如何指定被选的category的topic
 
@@ -50,6 +52,7 @@ class CategoryForm(FlaskForm):
 
 class TopicForm(FlaskForm):
     name = StringField('Name', validators=[DataRequired(), Length(1, 30)])
+    image = FileField('Upload Image')
     category = SelectField('Category', coerce=int, default=1)
     description = StringField('Description', validators=[DataRequired(), Length(1, 255)])
     submit = SubmitField()
@@ -75,14 +78,3 @@ class AdminCommentForm(CommentForm):
     author = HiddenField()
     email = HiddenField()
     site = HiddenField()
-
-class LinkForm(FlaskForm):
-    name = StringField('Name', validators=[DataRequired(), Length(1, 30)])
-    category = SelectField('Category', coerce=int, default=1)
-    url = StringField('URL', validators=[DataRequired(), URL(), Length(1, 255)])
-    submit = SubmitField()
-
-    def __init__(self, *args, **kwargs):
-        super(LinkForm, self).__init__(*args, **kwargs)
-        self.category.choices = [(category.id, category.name)
-                                 for category in Category.query.order_by(Category.name).all()]
