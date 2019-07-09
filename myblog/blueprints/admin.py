@@ -119,10 +119,13 @@ def new_post():
         db.session.add(post)
         db.session.commit()
 
+        img_list = request.files.getlist('image')
         img_path = current_app.root_path  + '/static/img/' + str(topic.name)
-        for f in request.files.getlist('image'):
-            filename = f.filename
-            f.save(os.path.join(img_path, filename))
+        if img_list[0].filename:
+
+            for f in img_list:
+                filename = f.filename
+                f.save(os.path.join(img_path, filename))
 
         flash('Post created.', 'success')
         return redirect(url_for('blog.show_post', post_id=post.id))
