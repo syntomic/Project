@@ -108,4 +108,5 @@ venv.bak/
 .idea
 logs/*
 !logs/.gitkeep
+.vscode
 
