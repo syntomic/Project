@@ -2,7 +2,7 @@
 
 *A clean blog.*
 
-Demo: http://101.132.189.214
+Demo: http://syntomic.top
 
 ![Screenshot](blog.png)
 
