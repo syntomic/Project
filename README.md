@@ -1,8 +1,8 @@
-# Bluelog
+# Cleanlog
 
 *A clean blog.*
 
-Demo: http://101.132.189.214
+Demo: http://syntomic.top
 
 ![Screenshot](blog.png)
 
@@ -24,6 +24,11 @@ Test account:
 * username: `admin`
 * password: `helloflask`
 
+
+## TODO list
+
+- [ ] Front-back separation
+- [ ] Beatify the interface
 ## License
 
 This project is licensed under the MIT License (see the
