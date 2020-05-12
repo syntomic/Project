@@ -28,7 +28,7 @@ Test account:
 ## TODO list
 
 - [ ] Front-back separation
-- [ ] Beatify the interface
+- [ ] Beautify the interface
 ## License
 
 This project is licensed under the MIT License (see the
