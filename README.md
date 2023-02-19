@@ -2,8 +2,6 @@
 
 *A clean blog.*
 
-Demo: http://syntomic.top
-
 ![Screenshot](blog.png)
 
 ## Installation
